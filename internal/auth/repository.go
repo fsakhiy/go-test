@@ -42,7 +42,17 @@ func (r *authRepository) CreateUser(ctx context.Context, req CreateUserRequest) 
 	return user, nil
 }
 
-func (r *authRepository) Login(ctx context.Context, req LoginRequest) (User, error) {
-	var user User
-	return user, nil
+func (r *authRepository) FindOneByUsername(ctx context.Context, username string) (User, error) {
+	res, err := r.queries.FindUserByUsername(ctx, username)
+	if err != nil {
+		return User{}, err
+	}
+
+	return User{
+		ID:        int64(res.ID),
+		Username:  res.Username,
+		Password:  res.Password,
+		CreatedAt: res.CreatedAt,
+		UpdatedAt: res.UpdatedAt,
+	}, nil
 }

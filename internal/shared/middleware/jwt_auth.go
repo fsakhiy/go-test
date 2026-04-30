@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"gin-test/internal/shared/utils"
 	"net/http"
 	"strings"
 
@@ -26,7 +27,23 @@ func ValidateAuth(secretKey string) gin.HandlerFunc {
 			return
 		}
 
-		fmt.Printf("=== middleware test === : %s \n", authHeader)
+		// separate "bearer "
+		token := strings.Split(authHeader, " ")[1]
+
+		// validate
+		claims, err := utils.ValidateJWT(token, secretKey)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"message": "Invalid token",
+			})
+
+			// CRITICAL: You must call Abort() in Gin to stop the request chain
+			c.Abort()
+			return
+		}
+
+		fmt.Println(claims)
 
 		// Pass control to the next middleware/handler
 		c.Next()

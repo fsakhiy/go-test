@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"reflect"
 	"strings"
@@ -101,8 +102,12 @@ func main() {
 	}
 
 	// 5. Setup Middleware
-	jwtSecret := os.Getenv("JWT_SECRET")
-	authMiddleware := middleware.ValidateAuth(jwtSecret)
+	jwtSecretStr := os.Getenv("JWT_SECRET")
+	if jwtSecretStr == "" {
+		log.Fatal("FATAL: JWT_SECRET environment variable is not set")
+	}
+
+	authMiddleware := middleware.ValidateAuth(jwtSecretStr)
 
 	// 6. Dependency Injection
 	ticketRepo := tickets.NewRepository(db)
@@ -111,14 +116,14 @@ func main() {
 
 	// auth injection
 	authRepo := auth.NewRepository(db)
-	authSvc := auth.NewService(authRepo)
+	authSvc := auth.NewService(authRepo, jwtSecretStr)
 	authHandler := auth.NewHandler(authSvc)
 
 	v1 := app.Group("/api/v1")
 
 	// register routes
 	tickets.RegisterRoutes(v1, ticketHandler, authMiddleware)
-	auth.RegisterRoutes(v1, authHandler)
+	auth.RegisterRoutes(v1, authHandler, jwtSecretStr)
 
 	// start app
 	if err := app.Run(":" + port); err != nil {

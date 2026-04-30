@@ -1,9 +1,17 @@
 package auth
 
-import "github.com/gin-gonic/gin"
+import (
+	"gin-test/internal/shared/middleware"
 
-func RegisterRoutes(router *gin.RouterGroup, h *AuthHandler) {
+	"github.com/gin-gonic/gin"
+)
+
+func RegisterRoutes(router *gin.RouterGroup, h *AuthHandler, jwtSecret string) {
 	authGroup := router.Group("/auth")
 	authGroup.POST("/register", h.CreateUser)
 	authGroup.POST("/login", h.Login)
+
+	authGroup.GET("/", middleware.ValidateAuth(jwtSecret), func(c *gin.Context) {
+		c.String(200, "Authorized")
+	})
 }

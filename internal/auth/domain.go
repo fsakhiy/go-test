@@ -15,10 +15,10 @@ type User struct {
 
 type Repository interface {
 	CreateUser(ctx context.Context, user CreateUserRequest) (User, error)
-	Login(ctx context.Context, user LoginRequest) (User, error)
+	FindOneByUsername(ctx context.Context, username string) (User, error)
 }
 
 type Service interface {
 	CreateUser(ctx context.Context, user CreateUserRequest) (User, error)
-	Login(ctx context.Context, user LoginRequest) (User, error)
+	Login(ctx context.Context, user LoginRequest) (string, error)
 }

@@ -43,7 +43,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	// Call service
-	user, err := h.service.Login(c, req)
+	token, err := h.service.Login(c, req)
 	if err != nil {
 		response.Err(c, 500, "internal server error", err.Error())
 		return
@@ -51,5 +51,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	// Respond with 201 Created
 	// response.Created(c, "User created successfully", user)
-	response.OK(c, 200, "Login", user)
+	response.OK(c, 200, "Login", map[string]string{
+		"token": token,
+	})
 }

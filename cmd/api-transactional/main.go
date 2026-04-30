@@ -108,18 +108,19 @@ func main() {
 	ticketRepo := tickets.NewRepository(db)
 	ticketSvc := tickets.NewService(ticketRepo)
 	ticketHandler := tickets.NewHandler(ticketSvc)
+
+	// auth injection
 	authRepo := auth.NewRepository(db)
 	authSvc := auth.NewService(authRepo)
 	authHandler := auth.NewHandler(authSvc)
 
 	v1 := app.Group("/api/v1")
 
-	// 7. Mount the routes
-	// Assuming RegisterRoutes accepts a *gin.RouterGroup or *gin.Engine now
+	// register routes
 	tickets.RegisterRoutes(v1, ticketHandler, authMiddleware)
 	auth.RegisterRoutes(v1, authHandler)
 
-	// 8. Start the server
+	// start app
 	if err := app.Run(":" + port); err != nil {
 		fmt.Printf("Error starting server: %v\n", err)
 		os.Exit(1)

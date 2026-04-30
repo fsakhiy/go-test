@@ -6,11 +6,6 @@ import (
 	"database/sql"
 )
 
-type AuthRepository interface {
-	CreateUser(ctx context.Context, req CreateUserRequest) (User, error)
-	Login(ctx context.Context, req LoginRequest) (User, error)
-}
-
 type authRepository struct {
 	db *sql.DB
 }

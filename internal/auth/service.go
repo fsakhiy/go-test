@@ -18,7 +18,10 @@ func (s *ticketService) CreateUser(ctx context.Context, req CreateUserRequest) (
 
 	fmt.Println(req)
 
-	return User{}, nil
+	return User{
+		Username: req.Username,
+		Password: req.Password,
+	}, nil
 }
 
 func (s *ticketService) Login(ctx context.Context, req LoginRequest) (User, error) {

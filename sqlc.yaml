@@ -55,7 +55,7 @@ sql:
   # ---------------------------------------------------------
 
   - engine: "mysql"
-    schema: "internal/auth/sql/schema.sql"
+    schema: "internal/auth/sql/migrations/"
     queries: "internal/auth/sql/queries.sql"
     gen:
       go:

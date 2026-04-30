@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 )
 
 type ticketService struct {
@@ -14,14 +13,7 @@ func NewService(repo Repository) Service {
 }
 
 func (s *ticketService) CreateUser(ctx context.Context, req CreateUserRequest) (User, error) {
-	// return s.repo.CreateUser(ctx, req)
-
-	fmt.Println(req)
-
-	return User{
-		Username: req.Username,
-		Password: req.Password,
-	}, nil
+	return s.repo.CreateUser(ctx, req)
 }
 
 func (s *ticketService) Login(ctx context.Context, req LoginRequest) (User, error) {

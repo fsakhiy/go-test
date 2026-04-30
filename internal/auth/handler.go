@@ -30,8 +30,6 @@ func (h *AuthHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	// Respond with 201 Created
-	// response.Created(c, "User created successfully", user)
 	response.OK(c, 201, "Created User", user)
 }
 

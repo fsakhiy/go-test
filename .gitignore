@@ -1,0 +1,38 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Air live reload build directory
+tmp/
+/tmp/
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db

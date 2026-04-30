@@ -1,0 +1,67 @@
+version: "2"
+sql:
+  # ---------------------------------------------------------
+  # 1. Configuration for the CORE TICKETS Module
+  # ---------------------------------------------------------
+  - engine: "mysql"
+    schema: "internal/tickets/sql/migrations/"
+    queries: "internal/tickets/sql/queries.sql"
+    gen:
+      go:
+        package: "db"
+        out: "internal/tickets/db"
+
+        # PRO-TIPS FOR API DEVELOPMENT:
+        emit_json_tags: true
+        emit_interface: true
+        emit_exact_table_names: false
+        emit_empty_slices: true
+
+        # This is the strict MySQL workaround for pointers
+        overrides:
+          - db_type: bigint
+            nullable: true
+            go_type:
+              type: "int64"
+              pointer: true
+          - db_type: int
+            nullable: true
+            go_type:
+              type: "int32"
+              pointer: true
+          - db_type: varchar
+            nullable: true
+            go_type:
+              type: "string"
+              pointer: true
+          - db_type: text
+            nullable: true
+            go_type:
+              type: "string"
+              pointer: true
+          - db_type: timestamp
+            nullable: true
+            go_type:
+              type: "time.Time"
+              pointer: true
+          - db_type: datetime
+            nullable: true
+            go_type:
+              type: "time.Time"
+              pointer: true
+
+  # ---------------------------------------------------------
+  # 2. Configuration for the REPORTING Module
+  # ---------------------------------------------------------
+
+  #- engine: "mysql"
+  #  schema: "internal/reporting/sql/schema.sql" # Can be the same schema file if you prefer
+  #  queries: "internal/reporting/sql/queries.sql"
+  #  gen:
+  #    go:
+  #      package: "db"
+  #      out: "internal/reporting/db"
+
+  #      emit_json_tags: true
+  #      emit_interface: true
+  #      emit_empty_slices: true

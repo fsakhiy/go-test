@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"strings"
 
+	"gin-test/internal/auth"
 	"gin-test/internal/shared/middleware"
 	"gin-test/internal/shared/response"
 	"gin-test/internal/tickets"
@@ -107,12 +108,16 @@ func main() {
 	ticketRepo := tickets.NewRepository(db)
 	ticketSvc := tickets.NewService(ticketRepo)
 	ticketHandler := tickets.NewHandler(ticketSvc)
+	authRepo := auth.NewRepository(db)
+	authSvc := auth.NewService(authRepo)
+	authHandler := auth.NewHandler(authSvc)
 
 	v1 := app.Group("/api/v1")
 
 	// 7. Mount the routes
 	// Assuming RegisterRoutes accepts a *gin.RouterGroup or *gin.Engine now
 	tickets.RegisterRoutes(v1, ticketHandler, authMiddleware)
+	auth.RegisterRoutes(v1, authHandler)
 
 	// 8. Start the server
 	if err := app.Run(":" + port); err != nil {

@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"gin-test/internal/shared/utils"
 	"net/http"
 	"strings"
@@ -43,7 +42,18 @@ func ValidateAuth(secretKey string) gin.HandlerFunc {
 			return
 		}
 
-		fmt.Println(claims)
+		// Extract user_id from claims and store in context.
+		// JWT MapClaims stores numbers as float64, so we convert to int64.
+		userIDFloat, ok := claims["user_id"].(float64)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"message": "Invalid token: missing user_id",
+			})
+			c.Abort()
+			return
+		}
+		c.Set("userId", int64(userIDFloat))
 
 		// Pass control to the next middleware/handler
 		c.Next()

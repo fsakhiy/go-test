@@ -19,10 +19,17 @@ type Ticket struct {
 // 2. The Repository Interface (What the DB must do)
 type Repository interface {
 	// ClaimTicket(ctx context.Context, ticketID int64, userID int64) error
-	NewTicket(ctx context.Context, referenceNo string, status string) (Ticket, error)
+	NewTicket(ctx context.Context, referenceNo string, status string, userID int64) (Ticket, error)
 	GetAll(ctx context.Context) ([]Ticket, error)
 	Update(ctx context.Context, referenceNo string, ticket UpdateTicketRequest) (Ticket, error)
 	Delete(ctx context.Context, referenceNo string) error
+}
+
+// 2b. The Elastic Repository Interface (What Elasticsearch must do)
+type ElasticRepository interface {
+	Index(ctx context.Context, ticket Ticket) error
+	Delete(ctx context.Context, referenceNo string) error
+	Search(ctx context.Context, query string) ([]Ticket, error)
 }
 
 // 3. The Service Interface (What the business logic must do)

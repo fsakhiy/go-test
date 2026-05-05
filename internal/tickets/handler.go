@@ -40,6 +40,11 @@ func (h *TicketHandler) NewTicket(c *gin.Context) {
 		return
 	}
 
+	// Set user_id from JWT (stored by auth middleware), AFTER binding
+	// so the request body can't overwrite it.
+	userId := c.MustGet("userId").(int64)
+	ticket.UserID = &userId
+
 	newTicket, err := h.svc.NewTicket(c.Request.Context(), ticket)
 	if err != nil {
 		c.Error(err)

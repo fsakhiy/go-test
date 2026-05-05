@@ -21,11 +21,11 @@ func NewRepository(database *sql.DB) Repository {
 	}
 }
 
-func (r *ticketRepo) NewTicket(ctx context.Context, referenceNo string, status string) (Ticket, error) {
+func (r *ticketRepo) NewTicket(ctx context.Context, referenceNo string, status string, userId int64) (Ticket, error) {
 	arg := db.InsertTIcketParams{
 		ReferenceNo: referenceNo,
 		Status:      status,
-		UserID:      nil,
+		UserID:      &userId,
 	}
 
 	err := r.queries.InsertTIcket(ctx, arg)
@@ -33,10 +33,13 @@ func (r *ticketRepo) NewTicket(ctx context.Context, referenceNo string, status s
 		return Ticket{}, err
 	}
 
-	return Ticket{
-		ReferenceNo: referenceNo,
-		Status:      status,
-	}, nil
+	// Fetch the full row back to get the MySQL-generated id and created_at
+	created, err := r.queries.GetTicketByRef(ctx, referenceNo)
+	if err != nil {
+		return Ticket{}, err
+	}
+
+	return Ticket(created), nil
 }
 
 func (r *ticketRepo) GetAll(ctx context.Context) ([]Ticket, error) {

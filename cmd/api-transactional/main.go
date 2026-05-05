@@ -2,6 +2,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -15,6 +16,7 @@ import (
 	"gin-test/internal/shared/response"
 	"gin-test/internal/tickets"
 
+	"github.com/elastic/go-elasticsearch/v9"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
@@ -101,6 +103,26 @@ func main() {
 		os.Exit(1)
 	}
 
+	// setup elastic
+	cert, err := os.ReadFile(os.Getenv("ELASTIC_CERT"))
+	if err != nil {
+		fmt.Printf("Error reading certificate file: %v\n", err)
+		os.Exit(1)
+	}
+	// fmt.Println(cert)
+	es, err := elasticsearch.NewTyped(
+		elasticsearch.WithAddresses(os.Getenv("ELASTIC_HOST")),
+		elasticsearch.WithBasicAuth(os.Getenv("ELASTIC_USER"), os.Getenv("ELASTIC_PASS")),
+		elasticsearch.WithCACert(cert),
+		// elasticsearch.WithInsecureSkipVerify(),
+	)
+
+	if err != nil {
+		fmt.Printf("Error creating Elasticsearch client: %v\n", err)
+		os.Exit(1)
+	}
+	defer es.Close(context.Background())
+
 	// 5. Setup Middleware
 	jwtSecretStr := os.Getenv("JWT_SECRET")
 	if jwtSecretStr == "" {
@@ -111,7 +133,8 @@ func main() {
 
 	// 6. Dependency Injection
 	ticketRepo := tickets.NewRepository(db)
-	ticketSvc := tickets.NewService(ticketRepo)
+	elasticRepo := tickets.NewElasticRepository(es)
+	ticketSvc := tickets.NewService(ticketRepo, elasticRepo)
 	ticketHandler := tickets.NewHandler(ticketSvc)
 
 	// auth injection
